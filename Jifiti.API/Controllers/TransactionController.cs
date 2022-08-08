@@ -29,9 +29,57 @@ namespace Jifiti.API.Controllers
                     return StatusCode(StatusCodes.Status400BadRequest);
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet("GetCards")]
+        public async Task<ActionResult<IEnumerable<Card>>> GetCards(string appId)
+        {
+            List<Card>? result;
+            string stringResponse;
+            try
+            {
+                stringResponse = await _transactionsService.GetCards(appId);
+
+                result = JsonSerializer.Deserialize<List<Card>>(stringResponse,
+                    new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                if (result == null)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet("GetTransactions")]
+        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactions(string appId)
+        {
+            List<Transaction>? result;
+            string stringResponse;
+            try
+            {
+                stringResponse = await _transactionsService.GetTransactions(appId);
+
+                result = JsonSerializer.Deserialize<List<Transaction>>(stringResponse,
+                    new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                if (result == null)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
             }
 
             return Ok(result);

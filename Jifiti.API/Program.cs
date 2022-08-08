@@ -9,6 +9,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ITransactionsService, TransctionsService>();
+string apiUri = builder.Configuration.GetValue<string>("Api:Uri");
+//To make  HttpClient instances manageable, and to avoid the socket exhaustion issue mentioned above,
+// IHttpClientFactory interface which can be used to configure and create HttpClient instances
+// in an app through Dependency Injection (DI) - (see TransactionService class
+builder.Services.AddHttpClient("TransactionsApi", 
+    c => c.BaseAddress = new Uri(apiUri));
+
 //Creates a single instance for the duration of the scoped request,
 //which means per HTTP request in ASP.NET.
 builder.Services.AddCors(options =>

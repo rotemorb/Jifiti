@@ -4,16 +4,16 @@ namespace Jifiti.API
 {
     public class TransctionsService : ITransactionsService
     {
-        private static readonly HttpClient client;
-        private static readonly IConfiguration _configuration;
-        static TransctionsService()
+        private readonly HttpClient client;
+        private readonly IConfiguration _configuration;
+
+        //Dependecy Injection - Here i'm using clientFactory,
+        //so that I can use a specific HTTP Client object
+        public TransctionsService(IHttpClientFactory clientFactory)
         {
             _configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
-            client = new HttpClient()
-            {
-               BaseAddress = new Uri("https://rpnszaidmg.execute-api.eu-west-1.amazonaws.com/Prod/")
-            };
+            client = clientFactory.CreateClient("TransactionsApi");
 
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -21,13 +21,12 @@ namespace Jifiti.API
 
 
         }
-
         public async Task<string> GetPersons()
-        {       
-            var url = string.Format("applications");
+        {
+            var url = "applications";
             string? stringResponse;
             using (var response = await client.GetAsync(url))
-            {         
+            {
                 if (response.IsSuccessStatusCode)
                 {
                     stringResponse = await response.Content.ReadAsStringAsync();
@@ -37,7 +36,45 @@ namespace Jifiti.API
                     throw new HttpRequestException(response.ReasonPhrase);
                 }
             }
-               
+
+            return stringResponse;
+        }
+
+        public async Task<string> GetCards(string appId)
+        {
+            var url = string.Format("cards/{0}", appId);
+            string? stringResponse;
+            using (var response = await client.GetAsync(url))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    stringResponse = await response.Content.ReadAsStringAsync();
+                }
+                else
+                {
+                    throw new HttpRequestException(response.ReasonPhrase);
+                }
+            }
+
+            return stringResponse;
+        }
+
+        public async Task<string> GetTransactions(string appId)
+        {
+            var url = string.Format("trans/{0}", appId);
+            string? stringResponse;
+            using (var response = await client.GetAsync(url))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    stringResponse = await response.Content.ReadAsStringAsync();
+                }
+                else
+                {
+                    throw new HttpRequestException(response.ReasonPhrase);
+                }
+            }
+
             return stringResponse;
         }
     }
