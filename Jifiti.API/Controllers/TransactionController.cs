@@ -38,13 +38,13 @@ namespace Jifiti.API.Controllers
         }
 
         [HttpGet("GetCards")]
-        public async Task<ActionResult<IEnumerable<Card>>> GetCards(string appId)
+        public async Task<ActionResult<IEnumerable<Card>>> GetCards(string cardNo)
         {
             List<Card>? result;
             string stringResponse;
             try
             {
-                stringResponse = await _transactionsService.GetCards(appId);
+                stringResponse = await _transactionsService.GetCards(cardNo);
 
                 result = JsonSerializer.Deserialize<List<Card>>(stringResponse,
                     new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
